@@ -1,0 +1,20 @@
+[project]
+name = "gemini-langunittest"
+version = "0.1.0"
+description = "Package to instruct Gemini Cli in writing and launching unit test cases."
+authors = [
+    {name = "jkclee",email = "puremonkey2001@yahoo.com.tw"}
+]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "fastmcp (>=2.12.3)",
+    "langunittest (>=0.1.2,<0.2.0)",
+    "pytest (>=8.4.2,<9.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
