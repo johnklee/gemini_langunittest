@@ -1,128 +1,102 @@
-# gemini_langunittest
-Use Gemini CLI to write and execute test cases
+# Gemini Langunittest
 
-## Using Gemini CLI for Test Generation
+This repository demonstrates using the Gemini CLI to automate common development tasks like generating unit tests, linting, and checking code coverage.
 
-This project is configured to facilitate the generation of unit tests using the Gemini CLI. The specific instructions for the CLI's behavior are defined in `GEMINI.md`. The CLI will automatically follow these guidelines to create `pytest` compatible test files in the `tests/unit/` directory.
+## Example Workflow
 
-### Example Usage
+Here is a step-by-step example of how you can use the Gemini CLI to write, lint, and test code in this repository.
 
-Here is a step-by-step example of how to use Gemini CLI to write and launch a new test case.
+### 1. Generating Test Cases
 
-**1. Add a new function to the source code.**
+First, ask the Gemini CLI to create a test case for a specific module.
 
-First, let's add a `subtract` function to `utils/math.py`:
+**User Prompt:** `Please create test case for module utils/math.py`
 
-```python
-# utils/math.py
-
-"""Module to conduct math operations."""
-
-def add(a: float, b: float) -> float:
-  """Addes `a` with `b`.
-
-  Args:
-    a: Value 1 to add.
-    b: Value 2 to add.
-
-  Returns:
-    `a + b`
-  """
-  return a + b
-
-def subtract(a: float, b: float) -> float:
-  """Subtracts `b` from `a`.
-
-  Args:
-    a: Value to subtract from.
-    b: Value to subtract.
-
-  Returns:
-    `a - b`
-  """
-  return a - b
-```
-
-**2. Prompt Gemini CLI to generate the tests.**
-
-Next, provide a prompt to the Gemini CLI asking it to generate the unit tests for the new function.
-
-**User Prompt:** "Generate unit tests for the `subtract` function in `utils/math.py`."
-
-**3. Review the generated test file.**
-
-The Gemini CLI will create a new test file or update the existing one with the following content:
+The CLI will identify the functions in `utils/math.py` and generate a corresponding test file in `tests/unit/test_math.py` with comprehensive test cases.
 
 ```python
 # tests/unit/test_math.py
 
-"""Unit test cases for the `math` module."""
 import pytest
-from utils.math import add, subtract
+from utils.math import add
 
 def test_add_positive_numbers():
-  """Test case to add positive numbers."""
-  assert add(1, 2) == 3
+    """Test adding two positive numbers."""
+    assert add(2, 3) == 5
 
-# ... existing add tests ...
+def test_add_negative_numbers():
+    """Test adding two negative numbers."""
+    assert add(-2, -3) == -5
 
-def test_subtract_positive_numbers():
-  """Test case to subtract positive numbers."""
-  assert subtract(5, 2) == 3
+def test_add_positive_and_negative_numbers():
+    """Test adding a positive and a negative number."""
+    assert add(5, -3) == 2
+    assert add(-5, 3) == -2
 
-def test_subtract_negative_numbers():
-  """Test case to subtract negative numbers."""
-  assert subtract(-5, -2) == -3
+def test_add_zero():
+    """Test adding with zero."""
+    assert add(5, 0) == 5
+    assert add(0, 5) == 5
+    assert add(0, 0) == 0
 
-def test_subtract_mixed_numbers():
-  """Test case to subtract a negative number from a positive number."""
-  assert subtract(5, -2) == 7
-
-def test_subtract_zero():
-  """Test case to subtract zero."""
-  assert subtract(5, 0) == 5
-
-def test_subtract_to_negative():
-  """Test case where the result is negative."""
-  assert subtract(2, 5) == -3
+def test_add_floats():
+    """Test adding floating-point numbers."""
+    assert add(2.5, 3.5) == 6.0
+    assert add(2.5, -3.5) == -1.0
 ```
 
-**4. Run the tests.**
+### 2. Running Tests
 
-Finally, you can run the tests, including the newly generated ones, using the standard test command:
+After the test file is created, the CLI will automatically run the test suite to verify the code.
 
 ```bash
-python -m pytest tests/
+$ python -m pytest tests
+============================= test session starts ==============================
+...
+tests/unit/test_math.py .....                                            [100%]
+============================== 5 passed in 0.04s ===============================
 ```
 
-## Testing
+### 3. Linting and Auto-Fixing
 
-This project uses `pytest` for unit testing.
+Next, you can ask the CLI to perform a lint check and apply fixes automatically.
 
-### Prerequisites
+**User Prompt:** `Do linting check on utils/ and fix warning.`
 
-Ensure you have [Poetry](https://python-poetry.org/) installed.
+The CLI will run `flake8`, identify issues, and prompt for approval before fixing them.
 
-### Installation
+**Linting Output:**
+```
+utils/math.py:3:1: E302 expected 2 blank lines, found 1
+```
 
-Install the project dependencies:
+After applying the fix, the CLI will re-run the linter and the test suite to ensure that the changes were safe.
+
+**Verification:**
+```bash
+$ flake8 utils/
+✅ All good! No linting warnings found.
+
+$ python -m pytest tests
+============================== 5 passed in 0.03s ===============================
+```
+
+### 4. Checking Code Coverage
+
+Finally, you can request a code coverage report.
+
+**User Prompt:** `Show code coverage of utils/math.py`
+
+The CLI will run `pytest` with the coverage flag and display the results.
 
 ```bash
-poetry install
+$ python -m pytest --cov=utils.math --cov-report term-missing tests/
+================================ tests coverage ================================
+Name            Stmts   Miss  Cover   Missing
+---------------------------------------------
+utils/math.py       2      0   100%
+---------------------------------------------
+TOTAL               2      0   100%
+============================== 5 passed in 0.07s ===============================
 ```
 
-### Running Unit Tests
-
-To execute the test suite, run the following command:
-
-```bash
-python -m pytest tests/
-```
-
-### Code Coverage
-
-To generate a code coverage report for the `utils` package, run:
-
-```bash
-python -m pytest --cov=utils tests/
-```
